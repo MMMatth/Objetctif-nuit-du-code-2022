@@ -11,7 +11,7 @@ Here there are my training
 
 ## 💻 Python library to install :
 
-* pygame `pip install pyxel`
+* pyxel `pip install pyxel`
 
 ## :mailbox: Contact me :
 <div align="center">
