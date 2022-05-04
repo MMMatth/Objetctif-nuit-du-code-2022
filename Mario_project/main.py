@@ -212,5 +212,5 @@ class objet:
     def draw(self):
         pyxel.blt(self.x,self.y,0,self.img[0],self.img[1],8,8,0)
         
-
-Jeu()
+if __name__ == "__main__":
+    Jeu()
