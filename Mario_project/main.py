@@ -15,7 +15,7 @@ class Jeu:
     def __init__(self):
         global scroll_x
 
-        pyxel.init(128, 128, title="Nuit du c0de")
+        pyxel.init(128, 128, title="Mario")
 
 
 
@@ -25,6 +25,8 @@ class Jeu:
         
         self.scroll_x = self.player.x
         self.scroll_y = self.player.y
+        
+
         
         pyxel.load("skin.pyxres")
 
@@ -75,70 +77,109 @@ class player:
     def __init__(self, x,y)-> None:
         self.x = x
         self.y = y
+        self.sens = 1
         
         self.img = (0,16)
         self.imglist = [(0,16),(8,16),(16,16),(24,16)]
         
         self.running = False
-        self.LIST_GROUND = [(1,0),(1,1),(2,0)]
-        self.LIST_GROUND_USABLE = [(0,1)]
+        self.LIST_GROUND = [(1,0),(1,1),(2,0),(3,1)]
+        self.LIST_GROUND_USABLE = [(0,1),(3,1)]
+        
+        self.left = False
+        self.right = False
+        self.jump = False
+        self.fall = True
     
     def get_tile(self,tile_x, tile_y):
         return pyxel.tilemap(0).pget(tile_x//8, tile_y//8)
     
-    def deplacement(self):
-        # print(self.get_tile(self.x, self.y))
-        flight = False
-        can_jump = True
+    def collision(self):
+        print(self.x,self.y)
+        if pyxel.btn(pyxel.KEY_RIGHT) and self.get_tile(self.x+6, self.y+12) not in self.LIST_GROUND :
+            self.right = True
+        else : 
+            self.right = False
         
-        # if not self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND and jump == False:
-        #     jump = True
-            
-        if pyxel.btn(pyxel.KEY_RIGHT) and self.get_tile(self.x+8, self.y+12) not in self.LIST_GROUND :
-            self.x += 1
-            self.running = True
-        else:
-            self.running = False
-        if pyxel.btn(pyxel.KEY_LEFT) and self.get_tile(self.x, self.y+12) not in self.LIST_GROUND:
-            self.x += -1
-            self.running = True
-        if pyxel.btn(pyxel.KEY_DOWN) and self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND: #on peut plus descendre
-                self.y += 1
+        if pyxel.btn(pyxel.KEY_LEFT) and self.get_tile(self.x+1, self.y+12) not in self.LIST_GROUND:
+            self.left = True
+        else : 
+            self.left = False
  
-        if pyxel.btn(pyxel.KEY_UP) and self.get_tile(self.x, self.y) not in self.LIST_GROUND and can_jump == True:
-            fligth = True
-        if fligth:
-            if pyxel.frame_count % 50 != 49:
-                print(pyxel.frame_count % 50)
-                self.y += -1 
-            else:
-                can_jump = False
-                
-        # elif  self.get_tile(self.x, self.y+16) not in self.LIST_GROUND and jump == False:
-        #     self.y += 1
+        if pyxel.btn(pyxel.KEY_UP) and self.get_tile(self.x, self.y) not in self.LIST_GROUND and self.jump == False and not self.get_tile(self.x, self.y+16) not in self.LIST_GROUND:
+            self.compteur = 0
+            self.jump = True
+        
+        if pyxel.btn(pyxel.KEY_DOWN) and self.get_tile(self.x, self.y+16) == (3,1):
+            self.x = 320
+            self.y = 40
+             
+        
+        if not self.get_tile(self.x, self.y) not in self.LIST_GROUND:
+            self.jump = False
             
-        if self.running:
-            self.run()
+        
+        if self.get_tile(self.x, self.y+16) not in self.LIST_GROUND and self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND:
+            self.fall = True
         else:
-            self.idle()
+            self.fall = False
+            
+        
+            
+    def deplacement(self):
+        if self.right :
+            self.x += 1
+            self.sens = 1
+
+        if self.left:
+            self.x += -1
+            self.sens = -1
+ 
+        if self.jump:
+            self.compteur += 1
+            if self.compteur % 15 != 14:
+                self.fall = False
+                self.y += -1
+            else:
+                self.jump = False
+                self.fall = True
+                
+        if self.fall:
+            self.y += 1
+                
+    def animation(self):
+        if self.jump or self.fall:
+            self.anim_jump()
+        elif self.right or self.left:
+            self.anim_run()
+        
+        else:
+            self.anim_idle()
+            
+            
     
     def update(self):
         self.deplacement()
+        self.animation()
+        self.collision()
 
-    def run(self):
+    def anim_run(self):
         if pyxel.frame_count%5 == 1:
             self.img = self.imglist[2]
         elif pyxel.frame_count%5 == 4:
             self.img = self.imglist[3]
             
-    def idle(self):
+    def anim_idle(self):
         if pyxel.frame_count%20 == 1:
             self.img = self.imglist[0]
         elif pyxel.frame_count%20 == 19:
             self.img = self.imglist[1]
+    
+    def anim_jump(self):
+        self.img = self.imglist[2]
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.img[0], self.img[1], 8, 16 , 6)
+        pyxel.blt(self.x, self.y, 0, self.img[0], self.img[1], 8 * self.sens, 16 , 6)
         
 
 Jeu()
