@@ -5,26 +5,11 @@ import pyxel, random
 TRANSPARENT_COLOR = 7
 WALL_TILE_X = 4
 TILE_FLOOR = (8, 8)
+
 scroll_x = 0
 
 
-def get_tile(tile_x, tile_y):
-    return pyxel.tilemap(0).pget(tile_x, tile_y)
 
-def detect_collision(x, y, dy):
-    x1 = x // 8
-    y1 = y // 8
-    x2 = (x + 8 - 1) // 8
-    y2 = (y + 8 - 1) // 8
-    for yi in range(y1, y2 + 1):
-        for xi in range(x1, x2 + 1):
-            if get_tile(xi, yi)[0] >= WALL_TILE_X:
-                return True
-    if dy > 0 and y % 8 == 1:
-        for xi in range(x1, x2 + 1):
-            if get_tile(xi, y1 + 1) == TILE_FLOOR:
-                return True
-    return False
 
 class Jeu:
     def __init__(self):
@@ -38,25 +23,12 @@ class Jeu:
 
         self.player = player(0,0)
         
+        self.scroll_x = self.player.x
+        self.scroll_y = self.player.y
+        
         pyxel.load("skin.pyxres")
 
         pyxel.run(self.update, self.draw)
-
-
-    def deplacement(self):
-        """déplacement avec les touches de directions"""
-
-        if pyxel.btn(pyxel.KEY_RIGHT):
-            self.player_x += 1
-            print(get_tile(self.player_x, self.player_y))
-        if pyxel.btn(pyxel.KEY_LEFT):
-            self.player_x += -1
-        if pyxel.btn(pyxel.KEY_DOWN):
-            self.player_y += 1
-        if pyxel.btn(pyxel.KEY_UP):
-            self.player_y += -1
-
-
 
     def explosions_animation(self):
         """animation des explosions"""
@@ -72,6 +44,8 @@ class Jeu:
     def update(self):
         """mise à jour des variables (30 fois par seconde)"""
         self.player.update()
+        self.scroll_x = (self.player.x - 64) 
+        self.scroll_y = (self.player.y - 64) 
 
 
     # =====================================================
@@ -83,16 +57,14 @@ class Jeu:
         # vide la fenetre
         pyxel.cls(6)
         pyxel.camera()
-        pyxel.bltm(0, 0, 0, (scroll_x // 4) % 128, 128, 128, 128)
-        pyxel.bltm(0, 0, 0, scroll_x, 0, 128, 128, TRANSPARENT_COLOR)
-
+        pyxel.bltm(0, 0, 0, self.scroll_x, self.scroll_y, 128, 128)
 
         # si le vaisseau possede des vies le jeu continue 
         if self.vies > 0:
          
             pyxel.text(5,5, 'VIES:'+ str(self.vies), 7)
             
-            pyxel.camera(scroll_x, 0)
+            pyxel.camera(self.scroll_x,self.scroll_y)
             
             self.player.draw()
 
@@ -108,21 +80,29 @@ class player:
         self.imglist = [(0,16),(8,16),(16,16),(24,16)]
         
         self.running = False
-        
+        self.LIST_GROUND = [(1,0),(1,1),(2,0)]
+        self.LIST_GROUND_USABLE = [(1,0),(1,1)]
+    
+    def get_tile(self,tile_x, tile_y):
+        return pyxel.tilemap(0).pget(tile_x//8, tile_y//8)
+    
     def deplacement(self):
+        print(self.get_tile(self.x, self.y))
         
-        if pyxel.btn(pyxel.KEY_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) and self.get_tile(self.x+8, self.y-13) not in self.LIST_GROUND :
             self.x += 1
             self.running = True
         else:
             self.running = False
-        if pyxel.btn(pyxel.KEY_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) and self.get_tile(self.x, self.y-16) not in self.LIST_GROUND:
             self.x += -1
             self.running = True
-        if pyxel.btn(pyxel.KEY_DOWN):
+        if pyxel.btn(pyxel.KEY_DOWN) and self.get_tile(self.x, self.y+16) not in self.LIST_GROUND: #on peut plus descendre
             self.y += 1
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btn(pyxel.KEY_UP) and self.get_tile(self.x+4, self.y) not in self.LIST_GROUND:
             self.y += -1
+        elif  self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND:
+            self.y += 1
             
         if self.running:
             self.run()
@@ -145,7 +125,7 @@ class player:
             self.img = self.imglist[1]
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, self.img[0], self.img[1], 8, 16 )
+        pyxel.blt(self.x, self.y, 0, self.img[0], self.img[1], 8, 16 , 6)
         
 
 Jeu()
