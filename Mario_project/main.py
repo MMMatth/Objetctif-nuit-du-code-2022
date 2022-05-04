@@ -81,28 +81,41 @@ class player:
         
         self.running = False
         self.LIST_GROUND = [(1,0),(1,1),(2,0)]
-        self.LIST_GROUND_USABLE = [(1,0),(1,1)]
+        self.LIST_GROUND_USABLE = [(0,1)]
     
     def get_tile(self,tile_x, tile_y):
         return pyxel.tilemap(0).pget(tile_x//8, tile_y//8)
     
     def deplacement(self):
-        print(self.get_tile(self.x, self.y))
+        # print(self.get_tile(self.x, self.y))
+        flight = False
+        can_jump = True
         
-        if pyxel.btn(pyxel.KEY_RIGHT) and self.get_tile(self.x+8, self.y-13) not in self.LIST_GROUND :
+        # if not self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND and jump == False:
+        #     jump = True
+            
+        if pyxel.btn(pyxel.KEY_RIGHT) and self.get_tile(self.x+8, self.y+12) not in self.LIST_GROUND :
             self.x += 1
             self.running = True
         else:
             self.running = False
-        if pyxel.btn(pyxel.KEY_LEFT) and self.get_tile(self.x, self.y-16) not in self.LIST_GROUND:
+        if pyxel.btn(pyxel.KEY_LEFT) and self.get_tile(self.x, self.y+12) not in self.LIST_GROUND:
             self.x += -1
             self.running = True
-        if pyxel.btn(pyxel.KEY_DOWN) and self.get_tile(self.x, self.y+16) not in self.LIST_GROUND: #on peut plus descendre
-            self.y += 1
-        if pyxel.btn(pyxel.KEY_UP) and self.get_tile(self.x+4, self.y) not in self.LIST_GROUND:
-            self.y += -1
-        elif  self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND:
-            self.y += 1
+        if pyxel.btn(pyxel.KEY_DOWN) and self.get_tile(self.x+8, self.y+16) not in self.LIST_GROUND: #on peut plus descendre
+                self.y += 1
+ 
+        if pyxel.btn(pyxel.KEY_UP) and self.get_tile(self.x, self.y) not in self.LIST_GROUND and can_jump == True:
+            fligth = True
+        if fligth:
+            if pyxel.frame_count % 50 != 49:
+                print(pyxel.frame_count % 50)
+                self.y += -1 
+            else:
+                can_jump = False
+                
+        # elif  self.get_tile(self.x, self.y+16) not in self.LIST_GROUND and jump == False:
+        #     self.y += 1
             
         if self.running:
             self.run()
