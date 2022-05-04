@@ -5,6 +5,18 @@
   <img src="https://github.com/kitao/pyxel/blob/main/doc/images/pyxel_logo_152x64.png" width = 50% >
 </p>
 
+> game img
+
+<p align = "center">
+  <img src="img/gif.gif" width = 50% >
+</p>
+
+> menu img
+
+<p align = "center">
+  <img src="img/img.png" width = 50% >
+</p>
+
 ## 🚀 What is my project ?
 I will participate with <a href = "https://github.com/SmallishMink34"> SmallishMink </a> in a <a href = "https://www.nuitducode.net/">python programming contest</a> where the goal is to make the best game.
 Here there are my training
