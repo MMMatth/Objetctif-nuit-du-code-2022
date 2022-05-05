@@ -44,7 +44,7 @@ class Jeu:
         """mise à jour des variables (30 fois par seconde)"""
         self.player.update()
         self.player2.update()
-        self.scroll_x = (((self.player.x+self.player2.x)//2)-64) 
+        self.scroll_x = ((self.player.x+self.player2.x)//2)-64 
         self.scroll_y = (self.player.y - 64) 
 
 
@@ -85,6 +85,7 @@ class player:
         
         self.img = (0,16)
         self.allimg = [(0,16),(8,16),(16,16),(24,16)]
+        self.allimgp2 = [(0,32),(8,32),(16,32),(24,32)]
         
         self.running = False
         self.LIST_GROUND = list_ground
@@ -105,77 +106,62 @@ class player:
     def collision(self):
         # print(self.x,self.y)
         if self.player == "p1":
-            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_RIGHT) and get_tile(self.x+6, self.y+12) not in self.LIST_GROUND : # colission left block
+            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) and get_tile(self.x+6, self.y+12) not in self.LIST_GROUND : # colission left block
                 self.right = True
             else : 
                 self.right = False
             
-            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT) or pyxel.btn(pyxel.KEY_LEFT) and  get_tile(self.x+1, self.y+12) not in self.LIST_GROUND: # colission right block
+            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT) and  get_tile(self.x+1, self.y+12) not in self.LIST_GROUND: # colission right block
                 self.left = True
             else : 
                 self.left = False
     
-            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)  or pyxel.btn(pyxel.KEY_UP) and get_tile(self.x, self.y) not in self.LIST_GROUND and self.jump == False and not get_tile(self.x, self.y+16) not in self.LIST_GROUND: # colission up block
+            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_A)  and get_tile(self.x, self.y) not in self.LIST_GROUND and self.jump == False and not get_tile(self.x, self.y+16) not in self.LIST_GROUND: # colission up block
                 self.compteur = 0
                 self.jump = True
             
-            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) or pyxel.btn(pyxel.KEY_DOWN) and get_tile(self.x, self.y+16) == (3,1):
+            if pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN) and get_tile(self.x, self.y+16) == (3,1):
                 self.x = 320
                 self.y = 40
                 
-            if get_tile(self.x, self.y+16) == (4,1):
-                self.dead()      
-
-            if get_tile(self.x, self.y) == (0,1) or get_tile(self.x+8, self.y) == (0,1):
-                self.objet = {
-                    "champignon": objet(183, 16, self.LIST_GROUND)
-                }   
-                
-            
-            if not get_tile(self.x, self.y) not in self.LIST_GROUND or not get_tile(self.x+8, self.y) not in self.LIST_GROUND:
-                self.jump = False
-                
-            
-            if get_tile(self.x, self.y+16) not in self.LIST_GROUND and get_tile(self.x+8, self.y+16) not in self.LIST_GROUND: # colission down block
-                self.fall = True
-            else:
-                self.fall = False
         if self.player == "p2":
-            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_RIGHT) and get_tile(self.x+6, self.y+12) not in self.LIST_GROUND : # colission left block
+            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_RIGHT) and get_tile(self.x+6, self.y+12) not in self.LIST_GROUND : # colission left block
                 self.right = True
             else : 
                 self.right = False
             
-            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_LEFT) or pyxel.btn(pyxel.KEY_LEFT) and  get_tile(self.x+1, self.y+12) not in self.LIST_GROUND: # colission right block
+            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_LEFT) and  get_tile(self.x+1, self.y+12) not in self.LIST_GROUND: # colission right block
                 self.left = True
             else : 
                 self.left = False
     
-            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_A)  or pyxel.btn(pyxel.KEY_UP) and get_tile(self.x, self.y) not in self.LIST_GROUND and self.jump == False and not get_tile(self.x, self.y+16) not in self.LIST_GROUND: # colission up block
+            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_A)  and get_tile(self.x, self.y) not in self.LIST_GROUND and self.jump == False and not get_tile(self.x, self.y+16) not in self.LIST_GROUND: # colission up block
                 self.compteur = 0
                 self.jump = True
             
-            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_DOWN) or pyxel.btn(pyxel.KEY_DOWN) and get_tile(self.x, self.y+16) == (3,1):
+            if pyxel.btn(pyxel.GAMEPAD2_BUTTON_DPAD_DOWN) and get_tile(self.x, self.y+16) == (3,1):
                 self.x = 320
                 self.y = 40
                 
-            if get_tile(self.x, self.y+16) == (4,1):
-                self.dead()      
+        if get_tile(self.x, self.y+16) == (4,1):
+            self.dead()      
 
-            if get_tile(self.x, self.y) == (0,1) or get_tile(self.x+8, self.y) == (0,1):
-                self.objet = {
-                    "champignon": objet(183, 16, self.LIST_GROUND)
-                }   
+        if get_tile(self.x, self.y) == (0,1) or get_tile(self.x+8, self.y) == (0,1):
+            self.objet = {
+                "champignon": objet(183, 16, self.LIST_GROUND)
+            }   
                 
             
-            if not get_tile(self.x, self.y) not in self.LIST_GROUND or not get_tile(self.x+8, self.y) not in self.LIST_GROUND:
-                self.jump = False
-                
+        if not get_tile(self.x, self.y) not in self.LIST_GROUND or not get_tile(self.x+8, self.y) not in self.LIST_GROUND:
+            self.jump = False
             
-            if get_tile(self.x, self.y+16) not in self.LIST_GROUND and get_tile(self.x+8, self.y+16) not in self.LIST_GROUND: # colission down block
-                self.fall = True
-            else:
-                self.fall = False
+        if get_tile(self.x, self.y+16) not in self.LIST_GROUND and get_tile(self.x+8, self.y+16) not in self.LIST_GROUND: # colission down block
+            self.fall = True
+            
+        else:
+            self.fall = False
+
+            
                     
         
             
@@ -218,19 +204,34 @@ class player:
             print(":)")
 
     def anim_run(self):
-        if pyxel.frame_count%5 == 1:
-            self.img = self.allimg[2]
-        elif pyxel.frame_count%5 == 4:
-            self.img = self.allimg[3]
+        if self.player == "p1":
+            if pyxel.frame_count%5 == 1:
+                self.img = self.allimg[2]
+            elif pyxel.frame_count%5 == 4:
+                self.img = self.allimg[3]
+        else:
+            if pyxel.frame_count%5 == 1:
+                self.img = self.allimgp2[2]
+            elif pyxel.frame_count%5 == 4:
+                self.img = self.allimgp2[3]
             
     def anim_idle(self):
-        if pyxel.frame_count%20 == 1:
-            self.img = self.allimg[0]
-        elif pyxel.frame_count%20 == 19:
-            self.img = self.allimg[1]
-    
+        if self.player == "p1":
+            if pyxel.frame_count%20 == 1:
+                self.img = self.allimg[0]
+            elif pyxel.frame_count%20 == 19:
+                self.img = self.allimg[1]
+        else:
+            if pyxel.frame_count%20 == 1:
+                self.img = self.allimgp2[0]
+            elif pyxel.frame_count%20 == 19:
+                self.img = self.allimgp2[1]
+                
     def anim_jump(self):
-        self.img = self.allimg[2]
+        if self.player == "p1":
+            self.img = self.allimg[2]
+        else:
+            self.img = self.allimgp2[2]
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, self.img[0], self.img[1], 8 * self.sens, 16 , 6)
